@@ -12,10 +12,16 @@ public class MainClass {
 		ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 
 		for (Long threadID : threadMXBean.getAllThreadIds()) {
+			
 			ThreadInfo info = threadMXBean.getThreadInfo(threadID);
-			System.out.println("Thread name: " + info.getThreadName() + "Thread State: " + info.getThreadState());
-			System.out.println(String.format("CPU time: %s ns", threadMXBean.getThreadCpuTime(threadID)));
-			System.out.println(String.format("CPU time: %s ms", threadMXBean.getThreadCpuTime(threadID) / (1000000)));
+			if (info != null)
+				System.out.print("Thread name: " + info.getThreadName() + "  State: " + info.getThreadState());
+			
+			if (threadMXBean != null) {
+				System.out.print(String.format(" CPU time: %s ns", threadMXBean.getThreadCpuTime(threadID)));
+				System.out.print(String.format(" CPU time: %s ms", threadMXBean.getThreadCpuTime(threadID) / (1000000)));
+				System.out.println(" ");
+			}
 		}
 	}
 
@@ -25,7 +31,6 @@ public class MainClass {
 		OperatingSystemMXBean bean = ManagementFactory.getOperatingSystemMXBean();
 		System.out.println("System load average: " + bean.getSystemLoadAverage());
 		
-		//getCommittedVirtualMemorySize());
 		Runtime runtime = Runtime.getRuntime();
 		
 		long memory = runtime.totalMemory() - runtime.freeMemory();
@@ -34,9 +39,20 @@ public class MainClass {
 	}
 
 	public static void main(String[] args) {
-		for (int i = 0; i < 10000; i++) {
+		
+		for ( int i = 0; i < 10000; i++) {
+			
+			new Thread(new Runnable() {
+				
+				@Override
+				public	void run() {
+					System.out.println("test thread ");
+				}
+			},"Counter-Thread").start();
+			
 			MainClass.getCPU();
 			MainClass.memory();
 		}
+		
 	}
 }
